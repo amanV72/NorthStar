@@ -13,8 +13,8 @@ public interface CartItemRepo extends JpaRepository<CartItem,Long> {
     CartItem findByUserIdAndProductId(String userId,String productId);
 
     void deleteByUserIdAndProductId(String userId,String productId);
+    void deleteByUserId(String userId);
 
     List<CartItem> findByUserId(String userId);
 
-    void deleteByUserId(String userId);
 }

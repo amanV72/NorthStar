@@ -19,21 +19,5 @@ eureka:
   instance:
     hostname: localhost
 
-#  rabbitmq:
-#    host: ${RABBITMQ_HOST:localhost}
-#    port: ${RABBITMQ_PORT:5672}
-#    username: ${RABBITMQ_USER:guest}
-#    password: ${RABBITMQ_PASS:guest}
-#    connection-timeout: 30000
-#    virtual-host: ${RABBITMQ_VHOST:guest}
-
 server:
   port: 8085
-
-#rabbitmq:
-#  exchange:
-#    name: order.exchange
-#  queue:
-#    name: order.queue
-#  routing:
-#    key: order.tracking

@@ -19,10 +19,6 @@ public class GatewayConfig {
                 1);
     }
 
-    //    @Bean
-//    public KeyResolver hostNameKeyResolver(){
-//        return exchange -> Mono.just(exchange.getRequest().getRemoteAddress().getHostName());
-//    }
     @Bean
     public KeyResolver userKeyResolver() {
         return exchange ->
@@ -36,54 +32,74 @@ public class GatewayConfig {
     @Bean
     public RouteLocator customRouteLocator(RouteLocatorBuilder routeLocatorBuilder) {
         return routeLocatorBuilder.routes()
+                .route("product-service-api-docs", r -> r
+                        .path("/v3/api-docs/product-service")
+                        .filters(f -> f.setPath("/v3/api-docs"))
+                        .uri("lb://PRODUCT-SERVICE"))
+                .route("user-service-api-docs", r -> r
+                        .path("/v3/api-docs/user-service")
+                        .filters(f -> f.setPath("/v3/api-docs"))
+                        .uri("lb://USER-SERVICE"))
+                .route("order-service-api-docs", r -> r
+                        .path("/v3/api-docs/order-service")
+                        .filters(f -> f.setPath("/v3/api-docs"))
+                        .uri("lb://ORDER-SERVICE"))
+                .route("cart-service-api-docs", r -> r
+                        .path("/v3/api-docs/cart-service")
+                        .filters(f -> f.setPath("/v3/api-docs"))
+                        .uri("lb://CART-SERVICE"))
+                .route("inventory-service-api-docs", r -> r
+                        .path("/v3/api-docs/inventory-service")
+                        .filters(f -> f.setPath("/v3/api-docs"))
+                        .uri("lb://INVENTORY-SERVICE"))
+                .route("payment-service-api-docs", r -> r
+                        .path("/v3/api-docs/payment-service")
+                        .filters(f -> f.setPath("/v3/api-docs"))
+                        .uri("lb://PAYMENT-SERVICE"))
                 .route("product-service", r -> r
-                        .path("/api/products/**")
-                        .filters(f -> f.retry(retryConfig -> retryConfig
-                                        .setRetries(10)
-                                        .setMethods(HttpMethod.GET)
-                                )
-                                .requestRateLimiter(config -> config
-                                        .setRateLimiter(redisRateLimiter())
-                                        .setKeyResolver(userKeyResolver())
-                                )
-                                .circuitBreaker(config -> config
-                                        .setName("ecomBreaker")
-                                        .setFallbackUri("forward:/fallback/products")
-                                ))
+                        .path("/api/products", "/api/products/**")
+                        .filters(f -> f.circuitBreaker(config -> config
+                                .setName("productBreaker")
+                                .setFallbackUri("forward:/fallback/products")
+                        ))
                         .uri("lb://PRODUCT-SERVICE")
                 )
-                .route("inventory-service",r->r
-                        .path("/api/inventory/**")
-//                        .filters(f-> f.circuitBreaker(config -> config
-//                                .setName("ecomBreaker")
-//                                .setFallbackUri("forward:/fallback/inventory")
-//                        ))
+                .route("inventory-service", r -> r
+                        .path("/api/inventory", "/api/inventory/**")
+                        .filters(f -> f.circuitBreaker(config -> config
+                                .setName("inventoryBreaker")
+                                .setFallbackUri("forward:/fallback/inventory")
+                        ))
                         .uri("lb://INVENTORY-SERVICE")
                 )
                 .route("user-service", r -> r
-                        .path("/api/users/**")
+                        .path("/api/users", "/api/users/**")
                         .filters(f -> f.circuitBreaker(config -> config
-                                .setName("ecomBreaker")
+                                .setName("userBreaker")
                                 .setFallbackUri("forward:/fallback/user")
                         ))
                         .uri("lb://USER-SERVICE")
                 )
-                .route("payment-service",r->r
-                        .path("/api/payments/**")
+                .route("payment-service", r -> r
+                        .path("/api/payments", "/api/payments/**")
+                        .filters(f -> f.circuitBreaker(config -> config
+                                .setName("paymentBreaker")
+                                .setFallbackUri("forward:/fallback/payment")
+                        ))
                         .uri("lb://PAYMENT-SERVICE")
                 )
                 .route("cart-service", r -> r
-                        .path("/api/cart/**")
+                        .path("/api/cart", "/api/cart/**")
                         .filters(f -> f.circuitBreaker(config -> config
-                                .setName("ecomBreaker")
-                                .setFallbackUri("forward:/fallback/order")
+                                .setName("cartBreaker")
+                                .setFallbackUri("forward:/fallback/cart")
                         ))
                         .uri("lb://CART-SERVICE")
                 )
                 .route("order-service", r -> r
-                        .path("/api/orders/**")
+                        .path("/api/orders", "/api/orders/**")
                         .filters(f -> f.circuitBreaker(config -> config
-                                .setName("ecomBreaker")
+                                .setName("orderBreaker")
                                 .setFallbackUri("forward:/fallback/order")
                         ))
                         .uri("lb://ORDER-SERVICE")

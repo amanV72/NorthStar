@@ -34,7 +34,6 @@ class ProductServiceTest {
 
     private ProductRequest productRequest;
     private Product product;
-  //  private ProductResponse productResponse;
 
     @BeforeEach
     void setUp() {

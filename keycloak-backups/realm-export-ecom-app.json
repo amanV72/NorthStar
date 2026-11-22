@@ -1,6 +1,34 @@
 {
   "id": "9dcdd15c-d10f-4ba0-a388-6fd2ea325c8f",
   "realm": "ecom-app",
+  "users": [
+    {
+      "username": "user",
+      "enabled": true,
+      "emailVerified": true,
+      "firstName": "Admin",
+      "lastName": "User",
+      "email": "user@ecommerce.com",
+      "credentials": [
+        {
+          "type": "password",
+          "value": "user",
+          "temporary": false
+        }
+      ],
+      "realmRoles": [
+        "default-roles-ecom-app"
+      ],
+      "clientRoles": {
+        "realm-management": [
+          "realm-admin"
+        ],
+        "oauth2-pkce": [
+          "ADMIN"
+        ]
+      }
+    }
+  ],
   "notBefore": 0,
   "defaultSignatureAlgorithm": "RS256",
   "revokeRefreshToken": false,
@@ -316,6 +344,24 @@
           "id": "2d7d146a-4311-40dc-8372-eddf86ae1c4a",
           "name": "USER",
           "description": "",
+          "composite": false,
+          "clientRole": true,
+          "containerId": "3220fa53-994e-48f9-a27b-3ae2f46bc084",
+          "attributes": {}
+        },
+        {
+          "id": "7309a447-c174-46ab-bdc3-78fd40c54bd6",
+          "name": "SELLER",
+          "description": "Seller access to owned products, inventory and fulfilment",
+          "composite": false,
+          "clientRole": true,
+          "containerId": "3220fa53-994e-48f9-a27b-3ae2f46bc084",
+          "attributes": {}
+        },
+        {
+          "id": "ea95c443-d040-4364-a7cb-e74cb11004c0",
+          "name": "ADMIN",
+          "description": "Platform administration access",
           "composite": false,
           "clientRole": true,
           "containerId": "3220fa53-994e-48f9-a27b-3ae2f46bc084",
@@ -718,10 +764,20 @@
       "alwaysDisplayInConsole": false,
       "clientAuthenticatorType": "client-secret",
       "redirectUris": [
-        "http://localhost:5173/*"
+        "http://localhost:5173/*",
+        "http://localhost:5174/*",
+        "http://127.0.0.1:5173/*",
+        "http://127.0.0.1:5174/*",
+        "https://oauth.pstmn.io/v1/browser-callback",
+        "https://oauth.pstmn.io/v1/callback"
       ],
       "webOrigins": [
-        "http://localhost:5173"
+        "http://localhost:5173",
+        "http://localhost:5174",
+        "http://127.0.0.1:5173",
+        "http://127.0.0.1:5174",
+        "https://oauth.pstmn.io",
+        "+"
       ],
       "notBefore": 0,
       "bearerOnly": false,

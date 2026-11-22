@@ -12,6 +12,8 @@ import java.util.Optional;
 @Repository
 public interface ProductRepo extends JpaRepository<Product, Long> {
     List<Product> findByActiveTrue();
+    List<Product> findBySellerIdAndActiveTrue(String sellerId);
+    Optional<Product> findByIdAndSellerId(Long id, String sellerId);
 
     @Query("SELECT p FROM product_table p WHERE p.active=true AND LOWER(p.name) LIKE LOWER(CONCAT('%',:keyword,'%'))")
     List<Product> searchProducts(@Param("keyword") String keyword);

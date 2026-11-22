@@ -21,7 +21,7 @@ public class KafkaConsumer {
     Consumer<ProductCreatedEvent> initializeProduct(){
         return event-> {
             log.info("Received product is: {}",event.getProductId());
-            inventoryService.initializeInventory(event.getProductId());
+            inventoryService.initializeInventory(event.getProductId(), event.getInitialStock());
         };
     }
     @Bean

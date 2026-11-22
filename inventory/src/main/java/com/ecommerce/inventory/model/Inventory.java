@@ -25,9 +25,9 @@ public class Inventory {
 
     @Enumerated(EnumType.STRING)
     private InventoryStatus status;
-//
-//    @Version
-//    private Long version;
+
+    @Version
+    private Long version;
 
     @CreationTimestamp
     private LocalDateTime createdAt;

@@ -2,6 +2,7 @@ package com.ecommerce.inventory.services;
 
 import com.ecommerce.inventory.dto.eventDto.*;
 import com.ecommerce.inventory.dto.OrderItemDTO;
+import com.ecommerce.inventory.dto.InventoryResponse;
 import com.ecommerce.inventory.model.Inventory;
 import com.ecommerce.inventory.model.InventoryReservation;
 import com.ecommerce.inventory.model.InventoryStatus;
@@ -35,14 +36,20 @@ public class InventoryService {
 
     @Transactional
     public void hasSufficientStockForEvent(OrderCreatedEventDto order) {
-        /// higher time complexity O(N)
-//        return orderItems.stream().allMatch(item->
-//            inventoryRepo.findById(item.getProductId())
-//                    .map(inventory -> item.getQuantity()<=(inventory.getTotalQuantity()- inventory.getReservedQuantity()))
-//                    .orElse(false)
-//        );
+        // ── Idempotency: if we already reserved for this order, don't reserve again ──
+        List<InventoryReservation> existingReservations = reservationRepo.findByOrderId(order.getOrderId());
+        if (!existingReservations.isEmpty()) {
+            log.info("Inventory already reserved for order #{}, skipping duplicate", order.getOrderId());
+            // Re-send the event so downstream services still get it
+            streamBridge.send("inventoryReserved-out-0", new InventoryReservedEvent(
+                    order.getOrderId(),
+                    order.getUserId(),
+                    order.getTotalAmount(),
+                    true
+            ));
+            return;
+        }
 
-        /// efficient
         List<Long> productIds = order.getItems().stream().map(OrderItemDTO::getProductId).toList();
 
         List<Inventory> inventories = inventoryRepo.findAllById(productIds);
@@ -94,14 +101,29 @@ public class InventoryService {
         ));
     }
 
-    public void initializeInventory(Long productId) {
+    public void initializeInventory(Long productId, Integer initialStock) {
+        int quantity = initialStock == null ? 0 : Math.max(initialStock, 0);
         Inventory newInventory = new Inventory();
         newInventory.setProductId(productId);
-        newInventory.setTotalQuantity(0);
+        newInventory.setTotalQuantity(quantity);
         newInventory.setReservedQuantity(0);
-        newInventory.setStatus(InventoryStatus.OUT_OF_STOCK);
+        newInventory.setStatus(quantity == 0
+                ? InventoryStatus.OUT_OF_STOCK
+                : quantity < 10 ? InventoryStatus.LOW_STOCK : InventoryStatus.IN_STOCK);
 
         inventoryRepo.save(newInventory);
+    }
+
+    public InventoryResponse getInventory(Long productId) {
+        return inventoryRepo.findById(productId)
+                .map(inventory -> new InventoryResponse(
+                        inventory.getProductId(),
+                        inventory.getTotalQuantity(),
+                        inventory.getReservedQuantity(),
+                        inventory.getTotalQuantity() - inventory.getReservedQuantity(),
+                        inventory.getSold(),
+                        inventory.getStatus()))
+                .orElse(null);
     }
 
     @Transactional

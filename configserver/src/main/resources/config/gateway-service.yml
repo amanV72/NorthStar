@@ -29,17 +29,44 @@ spring:
     oauth2:
       resourceserver:
         jwt:
-          issuer-uri: http://localhost:8443/realms/ecom-app
+          issuer-uri: ${KEYCLOAK_ISSUER_URI:http://localhost/realms/ecom-app}
+          jwk-set-uri: ${KEYCLOAK_JWK_SET_URI:http://keycloak:8080/realms/ecom-app/protocol/openid-connect/certs}
   cloud:
+    gateway:
+      globalcors:
+        cors-configurations:
+          '[/**]':
+            allowed-origin-patterns:
+              - http://localhost:*
+              - http://127.0.0.1:*
+            allowed-methods:
+              - GET
+              - POST
+              - PUT
+              - PATCH
+              - DELETE
+              - OPTIONS
+            allowed-headers:
+              - Authorization
+              - Content-Type
+            allow-credentials: true
     loadbalancer:
       eager-load:
         enabled: true
+        clients:
+          - product-service
+          - user-service
+          - order-service
+          - cart-service
+          - inventory-service
+          - payment-service
 eureka:
   client:
     serviceUrl:
       defaultZone: http://localhost:8761/eureka/
     register-with-eureka: true
     fetch-registry: true
+    registry-fetch-interval-seconds: 5
   instance:
     hostname: localhost
 
@@ -54,26 +81,37 @@ management:
   health:
     circuitbreakers:
       enabled: true
-  tracing:
-    sampling:
-      probability: 1.0
-
 server:
   port: 8080
 
 #Circuit Breaker
 resilience4j:
   circuitbreaker:
-    instances:
-      ecomBreaker:
+    configs:
+      default:
         registerHealthIndicator: true
         slidingWindowSize: 10
         minimumNumberOfCalls: 5
         permittedNumberOfCallsInHalfOpenState: 3
-        waitDurationInOpenState: 10s
+        waitDurationInOpenState: 5s
         failureRateThreshold: 50
         automaticTransitionFromOpenToHalfOpenEnabled: true
         slidingWindowType: count_based
+        slowCallDurationThreshold: 4s
+        slowCallRateThreshold: 80
+    instances:
+      productBreaker:
+        baseConfig: default
+      userBreaker:
+        baseConfig: default
+      orderBreaker:
+        baseConfig: default
+      cartBreaker:
+        baseConfig: default
+      paymentBreaker:
+        baseConfig: default
+      inventoryBreaker:
+        baseConfig: default
 
 #logging:
 #  level:

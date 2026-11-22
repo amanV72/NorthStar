@@ -2,7 +2,6 @@ package com.ecommerce.product.dto;
 
 import lombok.Data;
 
-import java.math.BigDecimal;
 
 @Data
 public class ProductResponse {
@@ -14,5 +13,7 @@ public class ProductResponse {
     private Integer stockQuantity;
     private String category;
     private String imageUrl;
+    private String sellerId;
+    private String sellerName;
     private Boolean active;
 }

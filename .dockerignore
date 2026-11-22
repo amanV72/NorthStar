@@ -1,0 +1,13 @@
+.git
+.idea
+.env
+**/.gradle
+**/build
+**/node_modules
+**/.npm-cache
+**/dist
+**/hs_err_pid*.log
+**/replay_pid*.log
+evaluate-*/.data
+logs
+uploads

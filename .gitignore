@@ -1,0 +1,6 @@
+/.env
+/logs/
+/uploads/
+/evaluate-*/.data/
+**/hs_err_pid*.log
+**/replay_pid*.log

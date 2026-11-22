@@ -8,9 +8,14 @@
         <processorPath useClasspath="false">
           <entry name="$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.projectlombok/lombok/1.18.42/8365263844ebb62398e0dc33057ba10ba472d3b8/lombok-1.18.42.jar" />
         </processorPath>
-        <module name="payment.main" />
+        <module name="cart.main" />
       </profile>
     </annotationProcessing>
+    <bytecodeTargetLevel>
+      <module name="inventory" target="21" />
+      <module name="inventory.main" target="21" />
+      <module name="inventory.test" target="21" />
+    </bytecodeTargetLevel>
   </component>
   <component name="JavacSettings">
     <option name="ADDITIONAL_OPTIONS_OVERRIDE">
@@ -20,6 +25,9 @@
       <module name="cart" options="-parameters" />
       <module name="cart.main" options="-parameters" />
       <module name="cart.test" options="-parameters" />
+      <module name="com.ecommerce.inventory" options="-parameters" />
+      <module name="com.ecommerce.inventory.main" options="-parameters" />
+      <module name="com.ecommerce.inventory.test" options="-parameters" />
       <module name="configserver" options="-parameters" />
       <module name="configserver.main" options="-parameters" />
       <module name="configserver.test" options="-parameters" />

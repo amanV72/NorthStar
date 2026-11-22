@@ -4,15 +4,15 @@ server:
 spring:
   datasource:
     url: jdbc:postgresql://localhost:5432/payment
-    username: ${DB_USER}
-    password: ${DB_PASS}
+    username: ${DB_USER:root}
+    password: ${DB_PASS:password}
 
   jpa:
     database: POSTGRESQL
     database-platform: org.hibernate.dialect.PostgreSQLDialect
     show-sql: true
     hibernate:
-      ddl-auto: create
+      ddl-auto: update
 
   cloud:
     function:
@@ -34,7 +34,7 @@ spring:
           content-type: application/json
       kafka:
         binder:
-          broker: localhost:9092
+          brokers: localhost:9092
 
 management:
   endpoints:
@@ -47,10 +47,6 @@ management:
   health:
     circuitbreakers:
       enabled: true
-  tracing:
-    sampling:
-      probability: 1.0
-
 eureka:
   client:
     serviceUrl:
@@ -95,5 +91,5 @@ resilience4j:
         limit-for-period: 2
 razorpay:
   api:
-    key: rzp_test_S9PNOJOKRZv9Lo
-    secret: 9xoFgwsEto0k06SOZ4uDmJQq
+    key: ${RAZORPAY_API_KEY:rzp_test_S9PNOJOKRZv9Lo}
+    secret: ${RAZORPAY_API_SECRET:9xoFgwsEto0k06SOZ4uDmJQq}

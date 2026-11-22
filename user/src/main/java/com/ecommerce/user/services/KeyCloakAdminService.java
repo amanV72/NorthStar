@@ -1,7 +1,7 @@
 package com.ecommerce.user.services;
 
 import com.ecommerce.user.dto.UserRequest;
-import org.apache.coyote.http11.filters.VoidInputFilter;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
@@ -13,9 +13,9 @@ import java.net.URI;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 
 @Service
+@RequiredArgsConstructor
 public class KeyCloakAdminService {
     @Value("${keycloak.admin.username}")
     private String adminUsername;
@@ -31,7 +31,8 @@ public class KeyCloakAdminService {
     private String clientUUID;
 
 
-    private final RestTemplate restTemplate = new RestTemplate();
+    private final RestTemplate restTemplate;
+
 
     public String getAdminAccessToken() {
         MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
@@ -51,9 +52,15 @@ public class KeyCloakAdminService {
                 entity,
                 Map.class
         );
+        if(!response.getStatusCode().is2xxSuccessful() || response.getBody() == null ) throw new RuntimeException("Cannot get admin token");
 
-        return response.getBody().get("access_token").toString();
-    }
+        Object accessToken = response.getBody().get("access_token");
+
+        if (accessToken == null) {
+            throw new RuntimeException("Access Token is Null");
+        }
+
+        return accessToken.toString();    }
 
     public String createUser(String token, UserRequest userRequest) {
 
@@ -97,8 +104,29 @@ public class KeyCloakAdminService {
         }
         String path = location.getPath();
         return path.substring(path.lastIndexOf("/") + 1);
+    }
 
+    public Map<String, Object> getUserById(String userId) {
+        try {
+            String token = getAdminAccessToken();
+            HttpHeaders headers = new HttpHeaders();
+            headers.setBearerAuth(token);
+            HttpEntity<Void> entity = new HttpEntity<>(headers);
+            String url = keycloakServerUrl + "/admin/realms/" + realm + "/users/" + userId;
 
+            ResponseEntity<Map> response = restTemplate.exchange(
+                    url,
+                    HttpMethod.GET,
+                    entity,
+                    Map.class
+            );
+            if (response.getStatusCode().is2xxSuccessful() && response.getBody() != null) {
+                return response.getBody();
+            }
+        } catch (Exception e) {
+            // ignore if user not found in Keycloak
+        }
+        return null;
     }
 
     private Map<String, Object> getRealmRoleRepresentation(String token, String roleName) {
@@ -114,6 +142,9 @@ public class KeyCloakAdminService {
                 entity,
                 Map.class
         );
+        if(!response.getStatusCode().is2xxSuccessful() || response.getBody()==null){
+            throw new RuntimeException("Failed to fetch Realm roles");
+        }
 
         return response.getBody();
     }

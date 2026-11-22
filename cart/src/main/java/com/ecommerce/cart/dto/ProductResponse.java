@@ -2,7 +2,6 @@ package com.ecommerce.cart.dto;
 
 import lombok.Data;
 
-import java.math.BigDecimal;
 
 @Data
 public class ProductResponse {
@@ -13,5 +12,6 @@ public class ProductResponse {
     private Long price;
     private String category;
     private String imageUrl;
+    private String sellerId;
     private Boolean active;
 }

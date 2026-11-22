@@ -6,7 +6,6 @@ import lombok.NoArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
-import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 @Data
@@ -23,6 +22,8 @@ public class CartItem {
 
     @Column(nullable = false)
     private String productId;
+
+    private String sellerId;
 
     @Column(nullable = false)
     private Integer quantity;

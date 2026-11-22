@@ -6,8 +6,8 @@ spring:
     url: jdbc:postgresql://localhost:5432/product
     # url: jdbc:postgresql://ep-shy-cake-adgf2oxe-pooler.c-2.us-east-1.aws.neon.tech/neondb?sslmode=require&channel_binding=require
     # url: jdbc:mysql://localhost:3306/products
-    username: ${DB_USER}
-    password: ${DB_PASS}
+    username: ${DB_USER:root}
+    password: ${DB_PASS:password}
 
   jpa:
     database: POSTGRESQL
@@ -15,15 +15,13 @@ spring:
     # database-platform: org.hibernate.dialect.MySQLDialect
     show-sql: true
     hibernate:
-      ddl-auto: create
+      ddl-auto: update
 
-  rabbitmq:
-    host: ${RABBITMQ_HOST:localhost}
-    port: ${RABBITMQ_PORT:5672}
-    username: ${RABBITMQ_USER:guest}
-    password: ${RABBITMQ_PASS:guest}
-    connection-timeout: 30000
-    virtual-host: ${RABBITMQ_VHOST:guest}
+  servlet:
+    multipart:
+      enabled: true
+      max-file-size: 15MB
+      max-request-size: 20MB
 
   cloud:
     stream:
@@ -31,22 +29,15 @@ spring:
         productCreated-out-0:
           destination: product-created
           content-type: application/json
-        kafka:
-          binders:
-            brokers: localhost:9092
+      kafka:
+        binder:
+          brokers: localhost:9092
 
 management:
   endpoints:
     web:
       exposure:
         include: "*"
-  tracing:
-    sampling:
-      probability: 1.0
-
-app:
-  message: "Hello product"
-
 eureka:
   client:
     service-url:

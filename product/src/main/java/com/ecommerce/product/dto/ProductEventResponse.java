@@ -9,4 +9,5 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class ProductEventResponse {
     private Long productId;
+    private Integer initialStock;
 }

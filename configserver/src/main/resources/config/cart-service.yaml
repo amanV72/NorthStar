@@ -3,15 +3,15 @@ server:
 spring:
   datasource:
     url: jdbc:postgresql://localhost:5432/cart
-    username: ${DB_USER}
-    password: ${DB_PASS}
+    username: ${DB_USER:root}
+    password: ${DB_PASS:password}
 
   jpa:
     database: POSTGRESQL
     database-platform: org.hibernate.dialect.PostgreSQLDialect
     show-sql: true
     hibernate:
-      ddl-auto: create
+      ddl-auto: update
 
 management:
   endpoints:
@@ -24,10 +24,6 @@ management:
   health:
     circuitbreakers:
       enabled: true
-  tracing:
-    sampling:
-      probability: 1.0
-
 eureka:
   client:
     serviceUrl:
@@ -53,23 +49,13 @@ resilience4j:
         slidingWindowSize: 10
         minimumNumberOfCalls: 5
         permittedNumberOfCallsInHalfOpenState: 3
-        waitDurationInOpenState: 10s
+        waitDurationInOpenState: 5s
         failureRateThreshold: 50
         automaticTransitionFromOpenToHalfOpenEnabled: true
         slidingWindowType: count_based
 
-  retry:
-    instances:
-      retryBreaker:
-        maxAttempts: 5
-        waitDuration: 500ms
-
-  ratelimiter:
-    instances:
-      rateBreaker:
-        timeout-duration: 0
-        limit-refresh-period: 4s
-        limit-for-period: 2
-
+  # Retry removed from addToCart — retries at service level caused duplicate
+  # cart entries when the gateway circuit-breaker already returned 503 but
+  # the actual DB write had already committed.
 
 

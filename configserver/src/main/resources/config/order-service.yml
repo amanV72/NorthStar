@@ -4,15 +4,15 @@ server:
 spring:
   datasource:
     url: jdbc:postgresql://localhost:5432/order
-    username: ${DB_USER}
-    password: ${DB_PASS}
+    username: ${DB_USER:root}
+    password: ${DB_PASS:password}
 
   jpa:
     database: POSTGRESQL
     database-platform: org.hibernate.dialect.PostgreSQLDialect
     show-sql: true
     hibernate:
-      ddl-auto: create
+      ddl-auto: update
 
   cloud:
     function:
@@ -42,27 +42,11 @@ spring:
           group: order-service-group
           content-type: application/json
       kafka:
-        binders:
+        binder:
           brokers: localhost:9092
-
-#  rabbitmq:
-#    host: ${RABBITMQ_HOST:localhost}
-#    port: ${RABBITMQ_PORT:5672}
-#    username: ${RABBITMQ_USER:guest}
-#    password: ${RABBITMQ_PASS:guest}
-#    connection-timeout: 30000
-#    virtual-host: ${RABBITMQ_VHOST:guest}
 
 app:
   message: "Hello order"
-
-#rabbitmq:
-#  exchange:
-#    name: order.exchange
-#  queue:
-#    name: order.queue
-#  routing:
-#    key: order.tracking
 
 management:
   endpoints:
@@ -75,10 +59,6 @@ management:
   health:
     circuitbreakers:
       enabled: true
-  tracing:
-    sampling:
-      probability: 1.0
-
 eureka:
   client:
     serviceUrl:

@@ -1,10 +1,8 @@
 package com.ecommerce.inventory.dto.eventDto;
 
-import com.ecommerce.inventory.dto.OrderItemDTO;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 
-import java.util.List;
 
 @Data
 @AllArgsConstructor

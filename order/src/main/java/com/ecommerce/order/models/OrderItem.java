@@ -5,7 +5,6 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.math.BigDecimal;
 
 @Data
 @Entity
@@ -18,6 +17,8 @@ public class OrderItem {
     private Long id;
 
     private Long productId;
+
+    private String sellerId;
 
     private Integer quantity;
     private Long price;
